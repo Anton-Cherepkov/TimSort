@@ -78,7 +78,7 @@ void inPlaceMerge(const RandomAccessIterator &first, const RandomAccessIterator 
     }
 
     size_t S = N - len * (cnt - 1);
-    insertionSort(last - 2 * S, last, comp);
+    insertionSort(last - 2 * S, last, last - 2 * S, comp);
 
     buffer = last - S;
     for (it1 = last -  2 * S; it1 >= first + S ; it1 -= S) {
@@ -86,8 +86,8 @@ void inPlaceMerge(const RandomAccessIterator &first, const RandomAccessIterator 
         mergeNeighbours(it2, it1, buffer, comp, minimumGallopSize);
     }
 
-    insertionSort(first, first + 2 * S, comp);
-    insertionSort(last - S, last, comp);
+    insertionSort(first, first + 2 * S, first, comp);
+    insertionSort(last - S, last, last - S, comp);
 }
 
 #endif //TIMSORT_INPLACE_MERGE_H

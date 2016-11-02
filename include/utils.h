@@ -17,12 +17,13 @@ size_t roundUp(size_t a, size_t b) {
 }
 
 template <class RandomAccessIterator, class Compare>
-void insertionSort(RandomAccessIterator first, RandomAccessIterator last, Compare comp) {
-    RandomAccessIterator i, j;
-    for (i = first + 1; i < last; ++i) {
-        j =  i - 1;
-        while (j >= first && !comp(*j, *(j + 1))) {
-            std::iter_swap(j, j + 1);
+void insertionSort(RandomAccessIterator first, RandomAccessIterator last, RandomAccessIterator sortBegin, Compare comp) {
+    RandomAccessIterator i, j, x;
+    for (i = sortBegin; i != last; ++i) {
+        x = std::upper_bound(first, i, *i, comp);
+        j = i;
+        while (j != x) {
+            std::iter_swap(j - 1, j);
             --j;
         }
     }
