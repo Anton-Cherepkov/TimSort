@@ -72,9 +72,10 @@ void calcRuns(std::vector<Run<RandomAccessIterator>> &runs, const RandomAccessIt
             RandomAccessIterator sortBegin = it;
             while (it != last && it != (runBegin + minRunLength))
                 ++runLength, ++it;
-            if (last - it <= minRunLength)
-                while (it != last)
-                    ++runLength, ++it;
+            if (last - it <= minRunLength) {
+                runLength += (last - it);
+                it = last;
+            }
             insertionSort(runBegin, it, sortBegin, comp);
         }
         runs.push_back(Run<RandomAccessIterator>(runBegin, runLength));
