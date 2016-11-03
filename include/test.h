@@ -63,8 +63,8 @@ void deleteDynamicArray(int *arr) {
 }
 
 void testRandomArrays() {
-    const int sizes[] = {1, 2, 5, 10, 25, 50, 100000};
-    const int sizesCnt = 7;
+    const int sizes[] = {1, 2, 5, 10, 25, 50, 100000, 1000000, 10000000};
+    const int sizesCnt = 9;
     for (int i = 0; i < sizesCnt; ++i) {
         int *arr = createIntDynamicArray(sizes[i]);
         fillRandomIntegers(arr, arr + sizes[i]);

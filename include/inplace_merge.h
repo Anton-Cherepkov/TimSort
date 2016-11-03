@@ -12,14 +12,16 @@ void mergeNeighbours(const RandomAccessIterator &first, const RandomAccessIterat
 
     std::swap_ranges(first, second, buffer);
 
-    RandomAccessIterator it1, it2, it;
+    RandomAccessIterator it1, it2, it, it1_end, it2_end;
     it1 = second;
+    it1_end = it1 + N;
     it2 = buffer;
+    it2_end = it2 + N;
     it = first;
 
     int lastElements = 0;
     RandomAccessIterator gallopStart, gallopFinish, gallopEnd;
-    while (it1 < second + N && it2 < buffer + N) {
+    while (it1 != it1_end && it2 != it2_end) {
         if (sizeAbs(lastElements) == minimumGallopSize) {
             gallopStart = (lastElements > 0 ? it1 : it2);
             gallopEnd = (lastElements > 0 ? second : buffer) + N;
@@ -42,11 +44,11 @@ void mergeNeighbours(const RandomAccessIterator &first, const RandomAccessIterat
         }
     }
 
-    if (it1 < second + N)
-        std::swap_ranges(it1, second + N, it);
-    it += second + N - it1;
-    if (it2 < buffer + N)
-        std::swap_ranges(it2, buffer + N, it);
+    if (it1 != it1_end)
+        std::swap_ranges(it1, it1_end, it);
+    it += it1_end- it1;
+    if (it2 != it2_end)
+        std::swap_ranges(it2, it2_end, it);
 }
 
 template <class RandomAccessIterator, class Compare>
@@ -56,24 +58,22 @@ void inPlaceMerge(const RandomAccessIterator &first, const RandomAccessIterator 
     size_t len = sqrt(N);
     size_t cnt = N / len;
 
-    size_t middleElementBlock = roundUp((size_t)(middle - first) + 1, len);
-    std::swap_ranges(first + len * (middleElementBlock - 1), first + len * middleElementBlock, first + len * (cnt - 1));
+    RandomAccessIterator middleElementBlock =  first + len * (roundUp((size_t)(middle - first), len) - 1);
+    RandomAccessIterator buffer = first + len * (cnt - 1);
+    std::swap_ranges(middleElementBlock, middleElementBlock + len, buffer);
 
-    RandomAccessIterator it1, it2;
-    for (size_t i = 0; i < cnt - 2; ++i) {
-        it1 = first + i * len;
-        for (size_t j = i + 1; j < cnt - 1; ++j) {
-            it2 = first + j * len;
-            if (comp(*it2, *it1) || (!comp(*it1, *it2) && !comp(*it2, *it1) && (comp(*(it2 + len - 1), *(it1 + len - 1)))))
-                it1 = it2;
+    RandomAccessIterator it1, it2, itMin;
+    for (it1 = first; it1 != buffer; it1 += len) {
+        itMin = it1;
+        for (it2 = it1 + len; it2 <= buffer - len; it2 += len) {
+            if (comp(*it2, *itMin) || (!comp(*it2, *itMin) && !comp(*itMin, *it2) && (comp(*(it2 + len - 1), *(itMin + len - 1)))))
+                itMin = it2;
         }
-        std::swap_ranges(it1, it1 + len, first + i * len);
+        std::swap_ranges(itMin, itMin + len, it1);
     }
 
-    RandomAccessIterator buffer = first + len * (cnt - 1);
-    for (size_t i = 0; i < cnt - 2; ++i) {
-        it1 = first + len * i;
-        it2 = first + len * (i + 1);
+    for (it1 = first; it1 != buffer - len; it1 += len) {
+        it2 = it1 + len;
         mergeNeighbours(it1, it2, buffer, comp, minimumGallopSize);
     }
 

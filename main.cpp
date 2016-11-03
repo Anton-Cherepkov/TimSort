@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include "include/timsort.h"
 #include "include/test.h"
 
